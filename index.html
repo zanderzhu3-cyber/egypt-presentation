@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ancient Egypt - Gift of the Nile</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;700;900&family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Lato',sans-serif;color:#F4E4BC}
+
+.slideshow{width:100vw;height:100vh;position:relative}
+.slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden;opacity:0;visibility:hidden;transition:opacity 0s}
+.slide.active{opacity:1;visibility:visible;z-index:2}
+
+.slide-video{position:absolute;top:50%;left:50%;min-width:100%;min-height:100%;transform:translate(-50%,-50%);object-fit:cover;z-index:0}
+
+.slide-overlay{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.ov-1{background:linear-gradient(180deg,rgba(90,60,20,0.35) 0%,rgba(139,90,43,0.15) 40%,rgba(90,60,20,0.4) 100%)}
+.ov-2{background:linear-gradient(180deg,rgba(139,90,43,0.3) 0%,rgba(180,140,60,0.12) 40%,rgba(139,90,43,0.35) 100%)}
+.ov-3{background:linear-gradient(180deg,rgba(20,40,80,0.25) 0%,rgba(139,90,43,0.15) 50%,rgba(90,60,20,0.3) 100%)}
+.ov-4{background:linear-gradient(180deg,rgba(139,90,43,0.25) 0%,rgba(120,30,30,0.1) 40%,rgba(139,90,43,0.3) 100%)}
+.ov-5{background:linear-gradient(135deg,rgba(139,90,43,0.22) 0%,rgba(90,60,20,0.25) 50%,rgba(139,90,43,0.22) 100%)}
+.ov-6{background:linear-gradient(180deg,rgba(90,60,20,0.25) 0%,rgba(139,90,43,0.12) 40%,rgba(90,60,20,0.3) 100%)}
+.ov-7{background:linear-gradient(180deg,rgba(60,40,20,0.4) 0%,rgba(139,90,43,0.18) 50%,rgba(60,40,20,0.4) 100%)}
+.ov-8{background:radial-gradient(ellipse at 50% 80%,rgba(212,168,67,0.1) 0%,rgba(90,60,20,0.3) 60%,rgba(60,40,20,0.45) 100%)}
+
+.papyrus{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")}
+
+.t-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:50;pointer-events:none;opacity:0}
+#tSand{background:linear-gradient(90deg,transparent,#D4A843 25%,#F4E4BC 50%,#D4A843 75%,transparent)}
+#tSand.on{opacity:1;animation:sandA 1.8s ease-in-out forwards}
+@keyframes sandA{0%{transform:translateX(-110%);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(110%);opacity:0}}
+#tScroll{background:linear-gradient(180deg,#8B5A2B,#6B4226,#8B5A2B);opacity:0}
+#tScroll.on{animation:scrollA 2s ease-in-out forwards}
+@keyframes scrollA{0%{clip-path:inset(0 100% 0 0);opacity:.85}40%{clip-path:inset(0 0 0 0);opacity:.85}60%{clip-path:inset(0 0 0 0);opacity:.85}100%{clip-path:inset(100% 0 0 0);opacity:0}}
+#tPyramid{background:conic-gradient(from 0deg at 50% 120%,#8B5A2B,#D4A843,#8B5A2B,#D4A843,#8B5A2B);opacity:0}
+#tPyramid.on{animation:pyrA 2s ease-in-out forwards}
+@keyframes pyrA{0%{clip-path:polygon(50% 50%,50% 50%,50% 50%);opacity:.85}50%{clip-path:polygon(50% 0%,100% 100%,0% 100%);opacity:.8}100%{clip-path:polygon(50% 0%,100% 100%,0% 100%);opacity:0}}
+#tPortal{background:radial-gradient(circle,#000 0%,rgba(139,90,43,0.95) 40%,transparent 70%);opacity:0}
+#tPortal.on{animation:portalA 2.2s ease-in-out forwards}
+@keyframes portalA{0%{clip-path:circle(0% at 50% 50%);opacity:1}40%{clip-path:circle(50% at 50% 50%);opacity:.9}70%{clip-path:circle(75% at 50% 50%);opacity:.7}100%{clip-path:circle(150% at 50% 50%);opacity:0}}
+#tGrain{opacity:0;mix-blend-mode:overlay;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E") repeat;background-size:128px}
+#tGrain.on{opacity:.04;animation:gA .15s steps(3) infinite}
+@keyframes gA{0%{transform:translate(0,0)}50%{transform:translate(-1px,1px)}100%{transform:translate(1px,-1px)}}
+
+.slide-content{position:relative;z-index:2;max-width:1100px;padding:35px 55px;text-align:center}
+.slide.active .slide-content{animation:cReveal 1.2s cubic-bezier(.4,0,.2,1) .3s both}
+@keyframes cReveal{from{opacity:0;transform:translateY(35px) scale(.97);filter:blur(3px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+
+.slide-title{font-family:'Cinzel Decorative','Cinzel',serif;font-size:3.2rem;font-weight:900;background:linear-gradient(135deg,#6B4226 0%,#D4A843 30%,#F9E79F 50%,#D4A843 70%,#6B4226 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px;margin-bottom:6px;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.5))}
+.slide-subtitle{font-family:'Playfair Display',serif;font-style:italic;font-size:1.2rem;color:rgba(244,228,188,0.9);margin-bottom:24px;text-shadow:0 1px 4px rgba(0,0,0,0.5)}
+.slogan{font-family:'Cinzel Decorative',serif;font-size:1.9rem;color:#F9E79F;margin:18px 0;animation:sGlow 4s ease-in-out infinite;text-shadow:0 2px 8px rgba(0,0,0,0.6)}
+@keyframes sGlow{0%,100%{text-shadow:0 0 8px rgba(212,168,67,0.3),0 2px 8px rgba(0,0,0,0.6)}50%{text-shadow:0 0 20px rgba(212,168,67,0.5),0 0 40px rgba(212,168,67,0.2),0 2px 8px rgba(0,0,0,0.6)}}
+
+/* === LIGHTNING EFFECTS === */
+.lightning-flash{position:absolute;top:0;left:0;width:100%;height:100%;z-index:4;pointer-events:none;opacity:0}
+.lightning-flash.strike{animation:lightningStrike .25s ease-out forwards}
+@keyframes lightningStrike{0%{opacity:0}3%{opacity:1;background:rgba(255,255,255,0.85)}8%{opacity:.15;background:rgba(200,200,255,0.05)}12%{opacity:.8;background:rgba(255,255,240,0.6)}20%{opacity:.1}28%{opacity:.5;background:rgba(200,220,255,0.2)}40%{opacity:.05}55%{opacity:.25;background:rgba(255,255,200,0.08)}100%{opacity:0}}
+.lightning-flash.ambient{animation:ambientFlash 6s ease-in-out infinite}
+@keyframes ambientFlash{0%,88%,100%{opacity:0;background:transparent}90%{opacity:.08;background:rgba(180,180,255,0.05)}92%{opacity:0}94%{opacity:.12;background:rgba(200,200,255,0.06)}96%{opacity:0}}
+.lightning-bolt{position:absolute;z-index:5;pointer-events:none;opacity:0}
+.lightning-bolt.strike{animation:boltFade .5s ease-out forwards}
+@keyframes boltFade{0%{opacity:0}5%{opacity:1}25%{opacity:.7}50%{opacity:.3}100%{opacity:0}}
+.screen-shake{animation:shake .15s ease-out}
+@keyframes shake{0%{transform:translate(0,0)}20%{transform:translate(-3px,2px)}40%{transform:translate(2px,-3px)}60%{transform:translate(-2px,1px)}80%{transform:translate(1px,-1px)}100%{transform:translate(0,0)}}
+.propaganda-title{font-family:'Cinzel Decorative',serif;font-size:5.5rem;font-weight:900;background:linear-gradient(135deg,#D4A843 0%,#F9E79F 25%,#FFF8DC 50%,#F9E79F 75%,#D4A843 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:8px;text-shadow:none;filter:drop-shadow(0 0 30px rgba(212,168,67,0.6)) drop-shadow(0 4px 12px rgba(0,0,0,0.8));animation:titleReveal 2s cubic-bezier(.4,0,.2,1) both}
+@keyframes titleReveal{0%{opacity:0;transform:scale(1.3);filter:drop-shadow(0 0 60px rgba(212,168,67,1)) drop-shadow(0 4px 12px rgba(0,0,0,0.8)) blur(8px)}40%{opacity:1;filter:drop-shadow(0 0 40px rgba(212,168,67,0.8)) drop-shadow(0 4px 12px rgba(0,0,0,0.8)) blur(2px)}100%{opacity:1;transform:scale(1);filter:drop-shadow(0 0 30px rgba(212,168,67,0.6)) drop-shadow(0 4px 12px rgba(0,0,0,0.8))}}
+.propaganda-slogan{font-family:'Cinzel Decorative',serif;font-size:2.2rem;color:#F9E79F;margin:24px 0;letter-spacing:5px;text-shadow:0 0 15px rgba(212,168,67,0.5),0 0 30px rgba(212,168,67,0.2),0 3px 10px rgba(0,0,0,0.7);animation:sloganReveal 2s cubic-bezier(.4,0,.2,1) .8s both}
+@keyframes sloganReveal{0%{opacity:0;transform:translateY(30px);letter-spacing:15px}100%{opacity:1;transform:translateY(0);letter-spacing:5px}}
+.propaganda-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:1.4rem;color:rgba(244,228,188,0.8);margin-top:12px;text-shadow:0 2px 8px rgba(0,0,0,0.6);animation:subReveal 1.5s ease-out 1.5s both}
+@keyframes subReveal{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+.energy-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;border-radius:50%;border:2px solid rgba(212,168,67,0);z-index:3;pointer-events:none}
+.energy-ring.pulse{animation:ringPulse 3s ease-out infinite}
+@keyframes ringPulse{0%{width:200px;height:200px;border-color:rgba(212,168,67,0.4);box-shadow:0 0 30px rgba(212,168,67,0.2),inset 0 0 30px rgba(212,168,67,0.1)}50%{width:500px;height:500px;border-color:rgba(212,168,67,0.15);box-shadow:0 0 60px rgba(212,168,67,0.1),inset 0 0 60px rgba(212,168,67,0.05)}100%{width:800px;height:800px;border-color:rgba(212,168,67,0);box-shadow:none}}
+.spark{position:absolute;width:3px;height:3px;background:#F9E79F;border-radius:50%;pointer-events:none;z-index:5;box-shadow:0 0 6px #D4A843,0 0 12px rgba(212,168,67,0.5)}
+@keyframes sparkFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--sx,20px),var(--sy,-40px)) scale(0)}}
+@keyframes posterReveal{0%{opacity:0;filter:brightness(3) blur(10px)}30%{opacity:1;filter:brightness(1.8) blur(3px)}60%{filter:brightness(1.2) blur(0)}100%{opacity:1;filter:brightness(1) blur(0)}}
+.section-label{font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:5px;text-transform:uppercase;color:rgba(249,231,159,0.6);margin-bottom:10px;text-shadow:0 1px 3px rgba(0,0,0,0.5)}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px;text-align:left}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;text-align:left}
+.grid-icons{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;text-align:left;margin-top:14px}
+
+.card{background:rgba(60,40,20,0.6);border:1px solid rgba(212,168,67,0.3);border-radius:12px;padding:16px;backdrop-filter:blur(8px);transition:transform .4s cubic-bezier(.4,0,.2,1),border-color .4s,box-shadow .4s}
+.card:hover{transform:translateY(-4px) scale(1.02);border-color:rgba(212,168,67,0.6);box-shadow:0 6px 25px rgba(0,0,0,0.4)}
+.card-icon{font-size:1.8rem;margin-bottom:5px}
+.card h3{font-family:'Cinzel',serif;font-size:1rem;color:#F9E79F;margin-bottom:4px}
+.card p{font-size:.84rem;line-height:1.5;color:rgba(244,228,188,0.82)}
+
+.pyramid-level{background:linear-gradient(90deg,rgba(212,168,67,0.35),rgba(212,168,67,0.08));border-left:3px solid #D4A843;padding:6px 13px;margin:3px 0;border-radius:0 8px 8px 0;font-size:.86rem;color:rgba(244,228,188,0.85);transition:all .3s;text-shadow:0 1px 2px rgba(0,0,0,0.3)}
+.pyramid-level:hover{background:rgba(212,168,67,0.45);padding-left:18px}
+.pyramid-level.pharaoh{background:linear-gradient(90deg,rgba(249,231,159,0.45),rgba(212,168,67,0.2));font-weight:700;font-size:.92rem;color:#F9E79F}
+
+.god-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:12px 0}
+.god-card{background:rgba(60,40,20,0.55);border:1px solid rgba(212,168,67,0.2);border-radius:10px;padding:9px;text-align:center;transition:transform .4s}
+.god-card:hover{transform:scale(1.05)}
+.god-card .emoji{font-size:1.6rem}
+.god-card .name{font-family:'Cinzel',serif;color:#F9E79F;font-size:.88rem;font-weight:700}
+.god-card .desc{font-size:.7rem;color:rgba(244,228,188,0.65);margin-top:2px}
+
+.achievement{background:rgba(60,40,20,0.55);border:1px solid rgba(212,168,67,0.3);border-radius:14px;padding:20px;margin:12px 0;text-align:left;position:relative;overflow:hidden;transition:border-color .3s}
+.achievement:hover{border-color:rgba(212,168,67,0.6)}
+.achievement h3{font-family:'Cinzel',serif;color:#F9E79F;font-size:1.05rem;margin-bottom:5px}
+.achievement .stat{font-size:1.8rem;font-weight:700;color:#D4A843}
+.achievement .stat-label{font-size:.76rem;color:rgba(244,228,188,0.55)}
+
+.attraction{background:rgba(60,40,20,0.55);border:1px solid rgba(212,168,67,0.2);border-radius:11px;padding:13px;text-align:left;backdrop-filter:blur(8px);transition:all .3s}
+.attraction:hover{border-color:rgba(212,168,67,0.5);transform:translateX(3px)}
+.attraction .num{font-family:'Cinzel Decorative',serif;font-size:1.4rem;color:#D4A843;float:left;margin-right:9px;line-height:1}
+.attraction h4{font-family:'Cinzel',serif;color:#F9E79F;font-size:.9rem;margin-bottom:2px}
+.attraction p{font-size:.74rem;color:rgba(244,228,188,0.72);line-height:1.35}
+
+.challenge{background:rgba(80,20,20,0.4);border-left:3px solid #C1272D;padding:9px 13px;margin:6px 0;border-radius:0 8px 8px 0;transition:background .3s}
+.challenge:hover{background:rgba(80,20,20,0.55)}
+.challenge h4{font-family:'Cinzel',serif;color:#F9E79F;font-size:.9rem}
+.challenge p{font-size:.78rem;color:rgba(244,228,188,0.72);line-height:1.35}
+
+.quote{font-family:'Playfair Display',serif;font-style:italic;font-size:1.08rem;line-height:1.7;color:rgba(244,228,188,0.88);border-left:3px solid #D4A843;padding-left:16px;margin:16px 0;text-align:left;text-shadow:0 1px 3px rgba(0,0,0,0.4)}
+
+.cta-btn{display:inline-block;background:linear-gradient(135deg,#D4A843,#B7950B);color:#2C1810;font-family:'Cinzel',serif;font-weight:700;font-size:1.05rem;padding:13px 36px;border-radius:50px;margin-top:16px;animation:ctaP 2.5s ease-in-out infinite;cursor:pointer;text-decoration:none;transition:transform .3s;box-shadow:0 4px 15px rgba(0,0,0,0.4)}
+.cta-btn:hover{transform:scale(1.06)}
+@keyframes ctaP{0%,100%{box-shadow:0 0 0 0 rgba(212,168,67,0.4),0 4px 15px rgba(0,0,0,0.4)}50%{box-shadow:0 0 0 16px rgba(212,168,67,0),0 4px 15px rgba(0,0,0,0.4)}}
+
+.info-row{display:flex;gap:14px;justify-content:center;margin:12px 0;flex-wrap:wrap}
+.info-badge{background:rgba(60,40,20,0.55);border:1px solid rgba(212,168,67,0.25);border-radius:20px;padding:6px 14px;font-size:.85rem;color:rgba(244,228,188,0.85);backdrop-filter:blur(6px)}
+.info-badge strong{color:#F9E79F}
+
+.scroll-content{max-height:78vh;overflow-y:auto;padding-right:6px}
+.scroll-content::-webkit-scrollbar{width:3px}
+.scroll-content::-webkit-scrollbar-track{background:rgba(0,0,0,0.15);border-radius:2px}
+.scroll-content::-webkit-scrollbar-thumb{background:rgba(212,168,67,0.4);border-radius:2px}
+
+.nav-controls{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:100;display:flex;gap:8px;align-items:center;background:rgba(60,40,20,0.65);backdrop-filter:blur(12px);border:1px solid rgba(212,168,67,0.25);border-radius:28px;padding:7px 18px}
+.nav-btn{background:transparent;border:1px solid rgba(212,168,67,0.3);color:#D4A843;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.nav-btn:hover{background:rgba(212,168,67,0.25);border-color:#D4A843}
+.slide-counter{font-family:'Cinzel',serif;color:rgba(212,168,67,0.7);font-size:.8rem;min-width:50px;text-align:center}
+.slide-dots{display:flex;gap:4px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(212,168,67,0.3);cursor:pointer;transition:all .4s}
+.dot.active{background:#D4A843;width:20px;border-radius:3px}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#6B4226,#D4A843,#F9E79F,#D4A843,#6B4226);background-size:200% 100%;z-index:100;transition:width .6s;animation:pShim 3s linear infinite}
+@keyframes pShim{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:3;overflow:hidden}
+.particle{position:absolute;background:#D4A843;border-radius:50%;opacity:0;animation:fall linear infinite}
+@keyframes fall{0%{opacity:0;transform:translateY(-10px)}10%{opacity:.3}90%{opacity:.08}100%{opacity:0;transform:translateY(100vh)}}
+
+.key-hint{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);font-size:.7rem;color:rgba(212,168,67,0.3);z-index:100}
+.hiero-border{position:absolute;bottom:0;left:0;width:100%;height:30px;z-index:2;pointer-events:none;opacity:.05;background:repeating-linear-gradient(90deg,#D4A843 0px,#D4A843 15px,transparent 15px,transparent 25px,#8B5A2B 25px,#8B5A2B 30px,transparent 30px,transparent 40px)}
+
+.poster-frame{position:relative;display:inline-block;border:3px solid #D4A843;border-radius:12px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.6),0 0 30px rgba(212,168,67,0.15);max-width:480px;width:100%}
+.poster-frame img{width:100%;height:auto;display:block;border-radius:9px}
+.poster-frame::after{content:'';position:absolute;inset:0;border-radius:9px;box-shadow:inset 0 0 40px rgba(0,0,0,0.3)}
+
+.s1-poster-area{display:flex;align-items:center;justify-content:center;gap:40px;margin-bottom:16px;flex-wrap:wrap}
+.s1-left-poster{max-width:420px;width:100%}
+.s1-right-info{text-align:left;max-width:520px}
+
+.s2-card{background:rgba(60,40,20,0.6);border:1px solid rgba(212,168,67,0.3);border-radius:12px;padding:16px;backdrop-filter:blur(8px)}
+.s2-card h3{font-family:'Cinzel',serif;font-size:1rem;color:#F9E79F;margin-bottom:8px}
+.s2-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.s2-bullet{color:#D4A843;font-size:.75rem;margin-top:3px;flex-shrink:0}
+.s2-item p{font-size:.8rem;line-height:1.45;color:rgba(244,228,188,0.82)}
+
+.s3-row{display:flex;gap:16px;margin-bottom:10px;text-align:left}
+.s3-label{font-family:'Cinzel',serif;color:#D4A843;font-size:.78rem;min-width:90px;padding-top:2px}
+.s3-content{font-size:.8rem;line-height:1.5;color:rgba(244,228,188,0.82)}
+.s3-label.bold{font-weight:700;color:#F9E79F}
+
+.s4-fact{display:flex;gap:10px;margin-bottom:7px;text-align:left}
+.s4-num{font-family:'Cinzel Decorative',serif;font-size:1.1rem;color:#D4A843;min-width:28px}
+.s4-text{font-size:.78rem;line-height:1.45;color:rgba(244,228,188,0.82)}
+
+.s5-stat-row{display:flex;gap:18px;margin:8px 0;flex-wrap:wrap}
+.s5-stat{text-align:center;min-width:70px}
+.s5-stat .val{font-size:1.6rem;font-weight:700;color:#D4A843}
+.s5-stat .lbl{font-size:.68rem;color:rgba(244,228,188,0.55);text-transform:uppercase;letter-spacing:1px}
+
+.s6-num{font-family:'Cinzel Decorative',serif;font-size:1.3rem;color:#D4A843;float:left;margin-right:8px;line-height:1}
+.s6-item{background:rgba(60,40,20,0.55);border:1px solid rgba(212,168,67,0.2);border-radius:10px;padding:10px 13px;margin-bottom:8px;text-align:left}
+.s6-item h4{font-family:'Cinzel',serif;color:#F9E79F;font-size:.88rem;margin-bottom:2px}
+.s6-item p{font-size:.72rem;color:rgba(244,228,188,0.72);line-height:1.35}
+
+.s7-row{display:flex;gap:12px;margin-bottom:10px;text-align:left}
+.s7-label{font-family:'Cinzel',serif;color:#C1272D;font-size:.82rem;min-width:100px;font-weight:700;padding-top:1px}
+.s7-text{font-size:.78rem;line-height:1.45;color:rgba(244,228,188,0.8)}
+
+@media(max-width:768px){.slide-title{font-size:2rem}.slogan{font-size:1.2rem}.grid-2,.grid-3,.god-grid{grid-template-columns:1fr}.grid-icons{grid-template-columns:1fr}.slide-content{padding:18px}.nav-controls{padding:5px 12px}.s1-poster-area{flex-direction:column;gap:16px}.s1-left-poster{max-width:320px}}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progress"></div>
+<div class="particles" id="particles"></div>
+<div class="t-overlay" id="tPortal"></div>
+<div class="t-overlay" id="tSand"></div>
+<div class="t-overlay" id="tScroll"></div>
+<div class="t-overlay" id="tPyramid"></div>
+<div class="t-overlay" id="tGrain"></div>
+
+<div class="slideshow" id="slideshow">
+
+<!-- S0: PROPAGANDA POSTER -->
+<div class="slide" data-t="portal">
+  <div class="slide-overlay" style="background:radial-gradient(ellipse at 50% 50%,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.4) 60%,rgba(0,0,0,0.7) 100%);z-index:1"></div>
+  <div class="lightning-flash" id="lightningFlash"></div>
+  <div class="energy-ring pulse"></div>
+  <div style="position:relative;z-index:6;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div class="poster-frame" style="max-height:90vh;width:auto;max-width:90vw;box-shadow:0 0 80px rgba(212,168,67,0.3),0 0 160px rgba(212,168,67,0.1),0 20px 60px rgba(0,0,0,0.8);">
+      <img src="egypt_poster.png" alt="Ancient Egypt Travel Poster" style="max-height:90vh;width:auto;max-width:90vw;display:block;border-radius:9px;">
+      <div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:5vh;pointer-events:none;z-index:7;">
+        <div class="propaganda-title" style="text-shadow:0 2px 20px rgba(0,0,0,0.9),0 0 40px rgba(212,168,67,0.7);font-size:clamp(2rem,5vw,4.5rem);">ANCIENT EGYPT</div>
+        <div class="propaganda-slogan" style="text-shadow:0 2px 15px rgba(0,0,0,0.9),0 0 30px rgba(212,168,67,0.5);font-size:clamp(1rem,2.5vw,2rem);">WITNESS THE GREATNESS. FEEL THE HISTORY. BE PART OF THE LEGEND.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- S1: INTRODUCTION -->
+<div class="slide" data-t="sand">
+  <video class="slide-video" autoplay muted loop playsinline><source src="egypt_videos/s2_eagle.mp4" type="video/mp4"></video>
+  <div class="slide-overlay ov-1"></div>
+  <div class="papyrus"></div>
+  <div class="hiero-border"></div>
+  <div class="slide-content">
+    <div class="slide-title">ANCIENT EGYPT</div>
+    <div class="slide-subtitle">Gift of the Nile</div>
+    <div class="slogan">WITNESS THE GREATNESS.<br>FEEL THE HISTORY.<br>BE PART OF THE LEGEND.</div>
+    <div class="info-row" style="margin-top:18px">
+      <div class="info-badge">🏛️ <strong>c. 3100 – 332 BCE</strong></div>
+      <div class="info-badge">🌍 <strong>Nile River Valley</strong></div>
+      <div class="info-badge">⏳ <strong>3,400+ years</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- S2: WHY VISIT -->
+<div class="slide" data-t="scroll">
+  <video class="slide-video" autoplay muted loop playsinline><source src="egypt_videos/s2.mp4" type="video/mp4"></video>
+  <div class="slide-overlay ov-2"></div>
+  <div class="papyrus"></div>
+  <div class="hiero-border"></div>
+  <div class="slide-content">
+    <div class="slide-title">Why Visit Ancient Egypt?</div>
+    <div class="slide-subtitle">Six reasons — pick your favorite</div>
+    <div class="grid-3" style="margin-top:18px">
+      <div class="card" style="text-align:center;padding:18px 10px">
+        <div style="font-size:2rem;margin-bottom:6px">🌍</div>
+        <h3 style="font-size:.92rem;color:#F9E79F">The Nile</h3>
+        <p style="font-size:.78rem;color:rgba(244,228,188,0.75);margin-top:4px">6,650 km of life. 300+ days of sun.</p>
+      </div>
+      <div class="card" style="text-align:center;padding:18px 10px">
+        <div style="font-size:2rem;margin-bottom:6px">💎</div>
+        <h3 style="font-size:.92rem;color:#F9E79F">Gold & Stone</h3>
+        <p style="font-size:.78rem;color:rgba(244,228,188,0.75);margin-top:4px">Nubian gold. Aswan granite. World's first paper.</p>
+      </div>
+      <div class="card" style="text-align:center;padding:18px 10px">
+        <div style="font-size:2rem;margin-bottom:6px">🚢</div>
+        <h3 style="font-size:.92rem;color:#F9E79F">Trade Hub</h3>
+        <p style="font-size:.78rem;color:rgba(244,228,188,0.75);margin-top:4px">Crossroads of Africa, Asia & the Mediterranean.</p>
+      </div>
+      <div class="card" style="text-align:center;padding:18px 10px">
+        <div style="font-size:2rem;margin-bottom:6px">🛡️</div>
+        <h3 style="font-size:.92rem;color:#F9E79F">3,000 Years</h3>
+        <p style="font-size:.78rem;color:rgba(244,228,188,0.75);margin-top:4px">Unified kingdom — longer than Rome or Britain.</p>
+      </div>
+      <div class="card" style="text-align:center;padding:18px 10px">
+        <div style="font-size:2rem;margin-bottom:6px">🍞</div>
+        <h3 style="font-size:.92rem;color:#F9E79F">Bread & Beer</h3>
+        <p style="font-size:.78rem;color:rgba(244,228,188,0.75);margin-top:4px">50+ bread varieties. Beer = daily calories.</p>
+      </div>
+      <div class="card" style="text-align:center;padding:18px 10px">
+        <div style="font-size:2rem;margin-bottom:6px">🎭</div>
+        <h3 style="font-size:.92rem;color:#F9E79F">Festivals</h3>
+        <p style="font-size:.78rem;color:rgba(244,228,188,0.75);margin-top:4px">Opet Festival: 27 days of music, processions, joy.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3: GOVERNMENT -->
+<div class="slide" data-t="pyramid">
+  <video class="slide-video" autoplay muted loop playsinline><source src="egypt_videos/s3.mp4" type="video/mp4"></video>
+  <div class="slide-overlay ov-3"></div>
+  <div class="papyrus"></div>
+  <div class="hiero-border"></div>
+  <div class="slide-content">
+    <div class="slide-title">Government & Society</div>
+    <div class="slide-subtitle">A theocratic monarchy — organized like a pyramid</div>
+    <div class="grid-2" style="margin-top:14px;text-align:left">
+      <div>
+        <div class="card" style="margin-bottom:10px;padding:14px 16px">
+          <h3 style="font-size:.95rem;color:#F9E79F;margin-bottom:6px">👑 The Pharaoh</h3>
+          <p style="font-size:.82rem;line-height:1.5;color:rgba(244,228,188,0.82)">Living Horus. Absolute power: law, military, religion. Duty: maintain <em>Ma'at</em> (cosmic order).</p>
+        </div>
+        <div class="card" style="padding:14px 16px">
+          <h3 style="font-size:.95rem;color:#F9E79F;margin-bottom:6px">📜 The Vizier</h3>
+          <p style="font-size:.82rem;line-height:1.5;color:rgba(244,228,188,0.82)">"Steward of the Entire Land." Tax, courts, irrigation. New Kingdom: two viziers (Upper + Lower Egypt).</p>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-family:'Cinzel',serif;color:#F9E79F;font-size:.88rem;margin-bottom:6px;text-shadow:0 1px 3px rgba(0,0,0,0.4)">Social Pyramid</h3>
+        <div class="pyramid-level pharaoh">🔺 Pharaoh — living god</div>
+        <div class="pyramid-level">🔺 Nobles & High Priests</div>
+        <div class="pyramid-level">🔺 Scribes & Officials (~1% literate)</div>
+        <div class="pyramid-level">🔺 Craftsmen & Merchants</div>
+        <div class="pyramid-level">🔺 Farmers & Laborers (80%)</div>
+        <div class="pyramid-level">🔺 Servants & Slaves (POWs, could own property)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4: RELIGION -->
+<div class="slide" data-t="sand">
+  <video class="slide-video" autoplay muted loop playsinline><source src="egypt_videos/s4.mp4" type="video/mp4"></video>
+  <div class="slide-overlay ov-4"></div>
+  <div class="papyrus"></div>
+  <div class="hiero-border"></div>
+  <div class="slide-content">
+    <div class="slide-title">Religion & Culture</div>
+    <div class="slide-subtitle">2,000+ gods — polytheism at its peak</div>
+    <div class="god-grid" style="margin-top:14px">
+      <div class="god-card"><div class="emoji">☀️</div><div class="name">Ra</div><div class="desc">Sun God — daily voyage across the sky</div></div>
+      <div class="god-card"><div class="emoji">💀</div><div class="name">Osiris</div><div class="desc">Lord of the Dead — judges souls</div></div>
+      <div class="god-card"><div class="emoji">✨</div><div class="name">Isis</div><div class="desc">Mother of Magic — protector</div></div>
+      <div class="god-card"><div class="emoji">🦅</div><div class="name">Horus</div><div class="desc">Sky God — the pharaoh's divine form</div></div>
+      <div class="god-card"><div class="emoji">🐺</div><div class="name">Anubis</div><div class="desc">Embalmer — guides mummification</div></div>
+      <div class="god-card"><div class="emoji">📖</div><div class="name">Thoth</div><div class="desc">Scribe of the Gods — inventor of writing</div></div>
+    </div>
+    <div class="grid-2" style="margin-top:14px">
+      <div class="card" style="padding:12px 14px">
+        <h3 style="font-size:.9rem;color:#F9E79F;margin-bottom:5px">💀 The Afterlife</h3>
+        <p style="font-size:.8rem;line-height:1.5;color:rgba(244,228,188,0.8)"><strong>Ka</strong> (life force) + <strong>Ba</strong> (personality soul). Mummification: 70 days. Heart weighed against Ma'at's feather.</p>
+      </div>
+      <div class="card" style="padding:12px 14px">
+        <h3 style="font-size:.9rem;color:#F9E79F;margin-bottom:5px">🏛️ Sacred Sites</h3>
+        <p style="font-size:.8rem;line-height:1.5;color:rgba(244,228,188,0.8)">Giza Pyramids · Karnak Temple (200 acres) · Valley of the Kings (63 tombs) · Abu Simbel · Great Sphinx (73m).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S5: ACHIEVEMENTS -->
+<div class="slide" data-t="scroll">
+  <video class="slide-video" autoplay muted loop playsinline><source src="egypt_videos/s5.mp4" type="video/mp4"></video>
+  <div class="slide-overlay ov-5"></div>
+  <div class="papyrus"></div>
+  <div class="hiero-border"></div>
+  <div class="slide-content">
+    <div class="slide-title">Famous Achievements</div>
+    <div class="slide-subtitle">Innovation that shaped civilization</div>
+    <div class="grid-3" style="margin-top:14px">
+      <div class="achievement" style="padding:14px 16px">
+        <h3 style="font-size:.95rem;color:#F9E79F;margin-bottom:6px">🏗️ Architecture</h3>
+        <div class="s5-stat-row" style="margin:6px 0 8px">
+          <div class="s5-stat"><div class="val">2.3M</div><div class="lbl">Stone Blocks</div></div>
+          <div class="s5-stat"><div class="val">±0.06°</div><div class="lbl">North Error</div></div>
+          <div class="s5-stat"><div class="val">13 ac</div><div class="lbl">Footprint</div></div>
+        </div>
+        <p style="font-size:.78rem;color:rgba(244,228,188,0.75);line-height:1.45">Great Pyramid: 146.6m tall, aligned to true north within 3/60 of a degree. Built by paid laborers, not slaves.</p>
+      </div>
+      <div class="achievement" style="padding:14px 16px">
+        <h3 style="font-size:.95rem;color:#F9E79F;margin-bottom:6px">⚕️ Medicine</h3>
+        <div class="s5-stat-row" style="margin:6px 0 8px">
+          <div class="s5-stat"><div class="val">48</div><div class="lbl">Surgical Cases</div></div>
+          <div class="s5-stat"><div class="val">c.1600</div><div class="lbl">BCE (Smith Papyrus)</div></div>
+        </div>
+        <p style="font-size:.78rem;color:rgba(244,228,188,0.75);line-height:1.45">Edwin Smith Papyrus: first document describing the brain. Format: examine → diagnose → treat → predict. Identical to modern clinical method.</p>
+      </div>
+      <div class="achievement" style="padding:14px 16px">
+        <h3 style="font-size:.95rem;color:#F9E79F;margin-bottom:6px">🔢 Mathematics</h3>
+        <div class="s5-stat-row" style="margin:6px 0 8px">
+          <div class="s5-stat"><div class="val">π≈3.16</div><div class="lbl">0.6% Error</div></div>
+          <div class="s5-stat"><div class="val">365</div><div class="lbl">Days (Calendar)</div></div>
+        </div>
+        <p style="font-size:.78rem;color:rgba(244,228,188,0.75);line-height:1.45">365-day calendar (12×30 + 5). Pi approximation. Rhind Papyrus: quadratic equations, arithmetic series. Sothic cycle: 1,460 years.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S6: ATTRACTIONS -->
+<div class="slide" data-t="pyramid">
+  <video class="slide-video" autoplay muted loop playsinline><source src="egypt_videos/s6.mp4" type="video/mp4"></video>
+  <div class="slide-overlay ov-6"></div>
+  <div class="papyrus"></div>
+  <div class="hiero-border"></div>
+  <div class="slide-content">
+    <div class="slide-title">Must-See Attractions</div>
+    <div class="slide-subtitle">Eight sites — the essential list</div>
+    <div class="grid-2" style="gap:8px;margin-top:12px">
+      <div class="s6-item" style="padding:8px 12px"><div class="s6-num">①</div><h4 style="font-size:.85rem">Pyramids of Giza</h4><p style="font-size:.72rem">Last surviving Ancient Wonder. 13 acres. Solar Boat Museum on site.</p></div>
+      <div class="s6-item" style="padding:8px 12px"><div class="s6-num">②</div><h4 style="font-size:.85rem">Valley of the Kings</h4><p style="font-size:.72rem">63 royal tombs. Tutankhamun's KV62: 5,398 objects. Hot air balloon at dawn.</p></div>
+      <div class="s6-item" style="padding:8px 12px"><div class="s6-num">③</div><h4 style="font-size:.85rem">Karnak Temple</h4><p style="font-size:.72rem">World's largest religious complex. 134 columns, 21m tall. Nightly Sound & Light Show.</p></div>
+      <div class="s6-item" style="padding:8px 12px"><div class="s6-num">④</div><h4 style="font-size:.85rem">Abu Simbel</h4><p style="font-size:.72rem">4 colossi, 20m each. Sun alignment: Feb 22 & Oct 22. Relocated 1960s to save from Lake Nasser.</p></div>
+      <div class="s6-item" style="padding:8px 12px"><div class="s6-num">⑤</div><h4 style="font-size:.85rem">Egyptian Museum, Cairo</h4><p style="font-size:.72rem">120,000+ artifacts. Tutankhamun's 11kg gold mask. Royal Mummy Room.</p></div>
+      <div class="s6-item" style="padding:8px 12px"><div class="s6-num">⑥</div><h4 style="font-size:.85rem">Nile River Cruise</h4><p style="font-size:.72rem">4-day felucca: Luxor → Aswan. Edfu + Kom Ombo temples. Cost: $500–2,000.</p></div>
+      <div class="s6-item" style="padding:8px 12px"><div class="s6-num">⑦</div><h4 style="font-size:.85rem">White Desert</h4><p style="font-size:.72rem">Mars-like chalk formations. 4WD safari + Bedouin camping. Zero light pollution.</p></div>
+      <div class="s6-item" style="padding:8px 12px"><div class="s6-num">⑧</div><h4 style="font-size:.85rem">Bibliotheca Alexandrina</h4><p style="font-size:.72rem">Modern tribute to the Great Library. Tilting glass roof, 120 scripts, planetarium.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- S7: CHALLENGES -->
+<div class="slide" data-t="sand">
+  <video class="slide-video" autoplay muted loop playsinline><source src="egypt_videos/s7.mp4" type="video/mp4"></video>
+  <div class="slide-overlay ov-7"></div>
+  <div class="papyrus"></div>
+  <div class="hiero-border"></div>
+  <div class="slide-content">
+    <div class="slide-title">Challenges & Weaknesses</div>
+    <div class="slide-subtitle">Five recurring problems across 3,000 years</div>
+    <div class="scroll-content" style="max-width:760px;margin:0 auto;text-align:left">
+      <div class="challenge" style="padding:7px 12px;margin-bottom:5px"><h4 style="font-size:.85rem">⚔️ 1. Foreign Invasions</h4><p style="font-size:.76rem;color:rgba(244,228,188,0.75);line-height:1.4">Sea Peoples (c. 1177 BCE) → Assyrian sack (671 BCE) → Persian conquest (525 BCE) → Alexander (332 BCE). Each time: cultural revival.</p></div>
+      <div class="challenge" style="padding:7px 12px;margin-bottom:5px"><h4 style="font-size:.85rem">🌊 2. Nile Flood Variability</h4><p style="font-size:.76rem;color:rgba(244,228,188,0.75);line-height:1.4">Low flood = famine. High flood = crop damage. Nileometers at Elephantine measured levels → tax rates adjusted accordingly.</p></div>
+      <div class="challenge" style="padding:7px 12px;margin-bottom:5px"><h4 style="font-size:.85rem">⛓️ 3. Social Inequality</h4><p style="font-size:.76rem;color:rgba(244,228,188,0.75);line-height:1.4">80%+ farmers bore heavy labor-tax. 90% of wealth controlled by 10% (priests, nobles). Still: more social mobility than Mesopotamia or Greece.</p></div>
+      <div class="challenge" style="padding:7px 12px;margin-bottom:5px"><h4 style="font-size:.85rem">💰 4. Economic Vulnerability</h4><p style="font-size:.76rem;color:rgba(244,228,188,0.75);line-height:1.4">No coins until Greek conquest (~300 BCE). Barter economy. State granaries functioned as de facto banks.</p></div>
+      <div class="challenge" style="padding:7px 12px;margin-bottom:5px"><h4 style="font-size:.85rem">📦 5. Resource Import Dependence</h4><p style="font-size:.76rem;color:rgba(244,228,188,0.75);line-height:1.4">No local timber (needed Lebanese cedar). Copper from Sinai, tin from Afghanistan. Trade disruption = construction halts.</p></div>
+      <div class="quote" style="margin-top:10px;text-align:center;border-left:none;padding-left:0;font-size:.9rem">"Egypt lasted 3,000 years — longer than Rome, longer than the British Empire. That's the real story."</div>
+    </div>
+  </div>
+</div>
+
+<!-- S8: FINAL PITCH -->
+<div class="slide" data-t="scroll">
+  <video class="slide-video" autoplay muted loop playsinline><source src="egypt_videos/s8.mp4" type="video/mp4"></video>
+  <div class="slide-overlay ov-8"></div>
+  <div class="papyrus"></div>
+  <div class="hiero-border"></div>
+  <div class="slide-content" style="max-width:880px">
+    <div class="slide-title">Egypt — Where Time Begins</div>
+    <div class="slide-subtitle">The world's first tourist destination — and still the greatest</div>
+    <div class="quote" style="text-align:center;border-left:none;padding-left:0;margin:14px 0;font-size:1rem">"Standing in the shadow of a 4,500-year-old pyramid — feeling the same wind the pharaohs felt."</div>
+    <div class="grid-3" style="margin:14px 0">
+      <div class="card" style="text-align:center;padding:16px 10px"><div style="font-size:1.6rem">🏆</div><h3 style="font-size:.88rem">Unique — Only Here</h3><p style="font-size:.76rem">Only Ancient Wonder still standing. Greeks and Romans were tourists here 2,000 years ago.</p></div>
+      <div class="card" style="text-align:center;padding:16px 10px"><div style="font-size:1.6rem">♾️</div><h3 style="font-size:.88rem">3,000 Years of Continuity</h3><p style="font-size:.76rem">Rome: ~500 years. British Empire: ~200. Same Nile. Same stars. Same wonder.</p></div>
+      <div class="card" style="text-align:center;padding:16px 10px"><div style="font-size:1.6rem">❓</div><h3 style="font-size:.88rem">Still Being Discovered</h3><p style="font-size:.76rem">Hidden corridor found 2023. Pristine coffins at Saqqara 2020. Next visit could rewrite textbooks.</p></div>
+    </div>
+    <div style="margin:12px 0;text-align:center">
+      <p style="font-size:.88rem;color:rgba(244,228,188,0.75);margin-bottom:4px">🎯 <strong style="color:#F9E79F">7-Day "Time Traveler" Package — $1,999/person</strong></p>
+      <p style="font-size:.78rem;color:rgba(244,228,188,0.6)">5★ Cairo hotel · Private Giza sunrise · 3-night Nile cruise · VIP Valley of the Kings · Abu Simbel · White Desert camping</p>
+    </div>
+    <div class="cta-btn">Book Your Time Travel Experience</div>
+  </div>
+</div>
+
+</div>
+
+<div class="nav-controls">
+  <button class="nav-btn" onclick="prevSlide()">◀</button>
+  <div class="slide-dots" id="dots"></div>
+  <div class="slide-counter" id="counter">1 / 9</div>
+  <button class="nav-btn" onclick="nextSlide()">▶</button>
+</div>
+<div class="key-hint">← → Arrow Keys · Space to advance</div>
+
+<script>
+const slides=document.querySelectorAll('.slide'),total=slides.length;
+let current=0,transitioning=false;
+const tEls={portal:document.getElementById('tPortal'),sand:document.getElementById('tSand'),scroll:document.getElementById('tScroll'),pyramid:document.getElementById('tPyramid')};
+const grain=document.getElementById('tGrain');
+
+function playT(type,cb){
+  const el=tEls[type];if(!el){cb();return}
+  transitioning=true;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');
+  grain.classList.add('on');
+  setTimeout(()=>{cb();setTimeout(()=>{el.classList.remove('on');grain.classList.remove('on');transitioning=false},800)},600);
+}
+
+function show(i,anim=true){
+  if(transitioning||i===current)return;
+  const t=slides[i].dataset.t||'sand';
+  if(anim){playT(t,()=>{slides.forEach(s=>s.classList.remove('active'));slides[i].classList.add('active')})}
+  else{slides.forEach(s=>s.classList.remove('active'));slides[i].classList.add('active')}
+  current=i;
+  document.getElementById('counter').textContent=`${current+1} / ${total}`;
+  if(slides[i].dataset.t==='portal')setTimeout(strikeLightning,600);
+  document.getElementById('progress').style.width=`${((current+1)/total)*100}%`;
+  document.querySelectorAll('.dot').forEach((d,j)=>d.classList.toggle('active',j===current));
+}
+function nextSlide(){show(current<total-1?current+1:0)}
+function prevSlide(){show(current>0?current-1:total-1)}
+
+const dotsEl=document.getElementById('dots');
+for(let i=0;i<total;i++){const d=document.createElement('div');d.className='dot'+(i===0?' active':'');d.onclick=()=>show(i);dotsEl.appendChild(d)}
+
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();nextSlide()}if(e.key==='ArrowLeft')prevSlide()});
+let tX=0;document.addEventListener('touchstart',e=>tX=e.touches[0].clientX);document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tX;if(Math.abs(dx)>50){dx>0?prevSlide():nextSlide()}});
+
+const pEl=document.getElementById('particles');
+function mkP(){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.animationDuration=(5+Math.random()*10)+'s';p.style.animationDelay=Math.random()*5+'s';const s=1+Math.random()*3;p.style.width=p.style.height=s+'px';pEl.appendChild(p);setTimeout(()=>p.remove(),18000)}
+// Lightning system — upgraded
+const flashEl=document.getElementById('lightningFlash');
+function makeBoltPath(x,y1,y2,depth){
+  if(depth>4)return'';
+  let d=`M${x},${y1}`;let cx=x,cy=y1;const segs=5+Math.floor(Math.random()*4);
+  const step=(y2-y1)/segs;
+  for(let i=1;i<=segs;i++){cx+=(Math.random()-.5)*25;cy+=step;d+=` L${cx},${cy}`;}
+  return d;
+}
+function strikeLightning(){
+  if(!document.querySelector('.slide.active[data-t="portal"]'))return;
+  const slide0=document.querySelector('.slide.active[data-t="portal"]');
+  slide0.classList.remove('screen-shake');void slide0.offsetWidth;slide0.classList.add('screen-shake');
+  setTimeout(()=>slide0.classList.remove('screen-shake'),200);
+  flashEl.classList.remove('strike');void flashEl.offsetWidth;flashEl.classList.add('strike');
+  const numBolts=1+Math.floor(Math.random()*2);
+  for(let b=0;b<numBolts;b++){
+    const bolt=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    bolt.setAttribute('class','lightning-bolt strike');
+    const bx=10+Math.random()*80;
+    bolt.style.cssText=`position:absolute;top:0;left:${bx}%;width:${100+Math.random()*100}px;height:100%;z-index:5;pointer-events:none;`;
+    const mainPath=makeBoltPath(50+Math.random()*20,0,100,0);
+    let branchPath='';
+    if(Math.random()>0.3){
+      const bx2=40+Math.random()*30,by2=20+Math.random()*40;
+      branchPath=makeBoltPath(bx2,by2,by2+30+Math.random()*30,1);
+    }
+    bolt.innerHTML=`<path d="${mainPath}" stroke="rgba(220,220,255,0.95)" stroke-width="2.5" fill="none" filter="drop-shadow(0 0 12px rgba(180,180,255,0.9)) drop-shadow(0 0 30px rgba(212,168,67,0.5))"/>${branchPath?'<path d="'+branchPath+'" stroke="rgba(200,200,255,0.7)" stroke-width="1.5" fill="none" filter="drop-shadow(0 0 8px rgba(180,180,255,0.6))"/>':''}<path d="${mainPath}" stroke="rgba(255,255,255,0.5)" stroke-width="5" fill="none" filter="blur(3px)"/>`;
+    slide0.appendChild(bolt);
+    setTimeout(()=>bolt.remove(),600);
+  }
+  for(let i=0;i<8;i++){const s=document.createElement('div');s.className='spark';const sx=20+Math.random()*60;s.style.left=sx+'%';s.style.top=Math.random()*100+'%';s.style.animation=`sparkFly ${0.4+Math.random()*0.6}s ease-out forwards`;slide0.appendChild(s);setTimeout(()=>s.remove(),1200)}
+}
+flashEl.classList.add('ambient');
+setInterval(()=>{if(document.querySelector('.slide.active[data-t="portal"]')&&Math.random()>0.35)strikeLightning()},2200);
+setTimeout(strikeLightning,600);setTimeout(strikeLightning,1200);setTimeout(strikeLightning,1800);
+
+setInterval(mkP,350);for(let i=0;i<20;i++)setTimeout(mkP,i*80);
+</script>
+</body>
+</html>
